@@ -1,0 +1,10 @@
+FROM gcr.io/tensorflow/tensorflow:latest-gpu-py3 
+
+MAINTAINER David Zucker <davzucky@hotmail.com>
+
+RUN pip --no-cache-dir install \
+	tqdm scikit-image
+
+WORKDIR "/notebooks"
+
+CMD ["/run_jupyter.sh", "--allow-root"]
