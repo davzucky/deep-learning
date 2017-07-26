@@ -172,6 +172,16 @@ def download_extract(database_name, data_path):
     # Remove compressed data
     os.remove(save_path)
 
+def scale(x, feature_range=(-1, 1)):
+    # scale to (0, 1)
+    IMAGE_MAX_VALUE = 255
+    #IMAGE_MIN_VALUE = 0
+    x = ((x - x.min())/(255 - x.min()))
+
+    # scale to feature_range
+    min, max = feature_range
+    x = x * (max - min) + min
+    return x
 
 class Dataset(object):
     """
@@ -187,7 +197,7 @@ class Dataset(object):
         DATASET_MNIST_NAME = 'mnist'
         IMAGE_WIDTH = 28
         IMAGE_HEIGHT = 28
-
+        
         if dataset_name == DATASET_CELEBA_NAME:
             self.image_mode = 'RGB'
             image_channels = 3
@@ -198,14 +208,14 @@ class Dataset(object):
 
         self.data_files = data_files
         self.shape = len(data_files), IMAGE_WIDTH, IMAGE_HEIGHT, image_channels
-
+    
     def get_batches(self, batch_size):
         """
         Generate batches
         :param batch_size: Batch Size
         :return: Batches of data
         """
-        IMAGE_MAX_VALUE = 255
+        
 
         current_index = 0
         while current_index + batch_size <= self.shape[0]:
@@ -216,7 +226,7 @@ class Dataset(object):
 
             current_index += batch_size
 
-            yield data_batch / IMAGE_MAX_VALUE - 0.5
+            yield scale(data_batch) # / IMAGE_MAX_VALUE - 0.5
 
 
 class DLProgress(tqdm):
